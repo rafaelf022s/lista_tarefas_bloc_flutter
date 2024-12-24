@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lista_tarefa_bloc/app/model/task_model.dart';
+import 'package:lista_tarefa_bloc/app/repositories/task_repository.dart';
 
 import '../bloc/task_bloc.dart';
 import '../bloc/task_event.dart';
@@ -11,6 +13,7 @@ class TaskScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TaskRepository repository = TaskRepository();
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
@@ -20,6 +23,14 @@ class TaskScreen extends StatelessWidget {
         ),
         backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              repository.cleanTasks();
+            },
+            icon: const Icon(Icons.delete),
+          )
+        ],
       ),
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
@@ -35,11 +46,24 @@ class TaskScreen extends StatelessWidget {
                   child: ListTile(
                     title: Text(task.nameTask),
                     subtitle: Text(task.description),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        context.read<TaskBloc>().add(DeleteTask(task.nameTask));
-                      },
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            context.read<TaskBloc>().add(DeleteTask(task.nameTask));
+                          },
+                        ),
+                        Checkbox(
+                          value: task.completed,
+                          onChanged: (value) {
+                            TaskModel taskTemp = task;
+                            taskTemp.completed = value ?? false;
+                            context.read<TaskBloc>().add(UpdateTask(taskTemp));
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 );

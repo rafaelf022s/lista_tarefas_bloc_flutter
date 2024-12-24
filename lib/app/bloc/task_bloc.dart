@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../model/task_model.dart';
@@ -13,7 +15,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       try {
         final tasks = await repository.getTasks();
         emit(TaskLoaded(tasks));
-      } catch (e) {
+      } catch (e, s) {
+        log('error: $e, stacktrace $s');
         emit(TaskError('Falha ao ler as tarefas'));
       }
     });

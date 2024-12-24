@@ -1,7 +1,6 @@
-
 import 'package:shared_preferences/shared_preferences.dart';
-import '../model/task_model.dart';
 
+import '../model/task_model.dart';
 
 class TaskRepository {
   static const _tasksKey = 'tasks';
@@ -16,5 +15,10 @@ class TaskRepository {
     final prefs = await SharedPreferences.getInstance();
     final tasksJson = tasks.map((task) => task.toJson()).toList();
     await prefs.setStringList(_tasksKey, tasksJson);
+  }
+
+  Future<void> cleanTasks() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.clear();
   }
 }
